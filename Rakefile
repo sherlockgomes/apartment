@@ -40,8 +40,8 @@ namespace :db do
     apartment_db_file = 'spec/config/database.yml'
     rails_db_file = 'spec/dummy/config/database.yml'
 
-    FileUtils.copy(apartment_db_file + '.sample', apartment_db_file, :verbose => true) unless File.exists?(apartment_db_file)
-    FileUtils.copy(rails_db_file + '.sample', rails_db_file, :verbose => true)         unless File.exists?(rails_db_file)
+    FileUtils.copy(apartment_db_file + '.sample', apartment_db_file, verbose: true) unless File.exist?(apartment_db_file)
+    FileUtils.copy(rails_db_file + '.sample', rails_db_file, verbose: true)         unless File.exist?(rails_db_file)
   end
 end
 
@@ -115,14 +115,6 @@ def my_config
   config['mysql']
 end
 
-def activerecord_below_5_2?
-  ActiveRecord.version.release < Gem::Version.new('5.2.0')
-end
-
 def migrate
-  if activerecord_below_5_2?
-    ActiveRecord::Migrator.migrate('spec/dummy/db/migrate')
-  else
-    ActiveRecord::MigrationContext.new('spec/dummy/db/migrate').migrate
-  end
+  ActiveRecord::MigrationContext.new('spec/dummy/db/migrate').migrate
 end

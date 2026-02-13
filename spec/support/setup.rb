@@ -26,7 +26,6 @@ module Apartment
             example.run
 
             # after
-            Rails.configuration.database_configuration = {}
             ActiveRecord::Base.clear_all_connections!
 
             Apartment.excluded_models.each do |model|

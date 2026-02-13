@@ -17,8 +17,8 @@ end
 
 # Some default setup for elevator specs
 shared_context "elevators", elevator: true do
-  let(:company1)  { mock_model(Company, database: db1).as_null_object }
-  let(:company2)  { mock_model(Company, database: db2).as_null_object }
+  let(:company1)  { instance_double(Company, database: db1) }
+  let(:company2)  { instance_double(Company, database: db2) }
 
   let(:api)       { Apartment::Tenant }
 

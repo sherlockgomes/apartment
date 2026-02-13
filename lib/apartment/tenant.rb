@@ -60,7 +60,7 @@ module Apartment
     #   Fetch the rails database configuration
     #
     def config
-      @config ||= Apartment.connection_config
+      @config ||= Apartment.connection_config.dup
     end
   end
 end

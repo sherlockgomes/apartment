@@ -4,7 +4,11 @@ module Apartment
   module Test
 
     def self.config
-      @config ||= YAML.load(ERB.new(IO.read('spec/config/database.yml')).result)
+      @config ||= YAML.safe_load(
+        ERB.new(IO.read('spec/config/database.yml')).result,
+        permitted_classes: [Symbol],
+        aliases: true
+      )
     end
   end
 end

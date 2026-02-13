@@ -17,27 +17,27 @@ module Apartment
 
       def drop(tenant)
         raise TenantNotFound,
-          "The tenant #{environmentify(tenant)} cannot be found." unless File.exists?(database_file(tenant))
+          "The tenant #{environmentify(tenant)} cannot be found." unless File.exist?(database_file(tenant))
 
         File.delete(database_file(tenant))
       end
 
       def current
-        File.basename(Apartment.connection.instance_variable_get(:@config)[:database], '.sqlite3')
+        File.basename(Apartment.connection.pool.db_config.database, '.sqlite3')
       end
 
     protected
 
       def connect_to_new(tenant)
         raise TenantNotFound,
-          "The tenant #{environmentify(tenant)} cannot be found." unless File.exists?(database_file(tenant))
+          "The tenant #{environmentify(tenant)} cannot be found." unless File.exist?(database_file(tenant))
 
         super database_file(tenant)
       end
 
       def create_tenant(tenant)
         raise TenantExists,
-          "The tenant #{environmentify(tenant)} already exists." if File.exists?(database_file(tenant))
+          "The tenant #{environmentify(tenant)} already exists." if File.exist?(database_file(tenant))
 
         begin
           f = File.new(database_file(tenant), File::CREAT)

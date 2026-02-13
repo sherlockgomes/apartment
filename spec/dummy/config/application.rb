@@ -1,4 +1,4 @@
-require File.expand_path('../boot', __FILE__)
+require_relative "boot"
 
 require "active_model/railtie"
 require "active_record/railtie"
@@ -11,15 +11,10 @@ require "apartment"
 
 module Dummy
   class Application < Rails::Application
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
     require 'apartment/elevators/subdomain'
     require 'apartment/elevators/domain'
 
     config.middleware.use Apartment::Elevators::Subdomain
-
-    # Custom directories with classes and modules you want to be autoloadable.
     config.autoload_paths += %W(#{config.root}/lib)
 
     # Only load the plugins named here, in the order given (default is alphabetical).

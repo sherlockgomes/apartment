@@ -109,7 +109,7 @@ module Apartment
       #   Reset the tenant connection to the default
       #
       def reset
-        Apartment.establish_connection @config
+        Apartment.establish_connection @config.symbolize_keys
       end
 
       #   Load the rails seed file into the db
@@ -142,7 +142,7 @@ module Apartment
     protected
 
       def process_excluded_model(excluded_model)
-        excluded_model.constantize.establish_connection @config
+        excluded_model.constantize.establish_connection @config.symbolize_keys
       end
 
       def drop_command(conn, tenant)
@@ -173,8 +173,8 @@ module Apartment
       def connect_to_new(tenant)
         query_cache_enabled = ActiveRecord::Base.connection.query_cache_enabled
 
-        Apartment.establish_connection multi_tenantify(tenant)
-        Apartment.connection.active?   # call active? to manually check if this connection is valid
+        Apartment.establish_connection multi_tenantify(tenant).symbolize_keys
+        Apartment.connection.verify!   # call verify! to manually check if this connection is valid
 
         Apartment.connection.enable_query_cache! if query_cache_enabled
       rescue *rescuable_exceptions => exception
@@ -209,7 +209,7 @@ module Apartment
       #   Load a file or raise error if it doesn't exists
       #
       def load_or_raise(file)
-        if File.exists?(file)
+        if File.exist?(file)
           load(file)
         else
           raise FileNotFound, "#{file} doesn't exist yet"
@@ -238,7 +238,7 @@ module Apartment
         if Apartment.with_multi_server_setup
           # neutral connection is necessary whenever you need to create/remove a database from a server.
           # example: when you use postgresql, you need to connect to the default postgresql database before you create your own.
-          SeparateDbConnectionHandler.establish_connection(multi_tenantify(tenant, false))
+          SeparateDbConnectionHandler.establish_connection(multi_tenantify(tenant, false).symbolize_keys)
           yield(SeparateDbConnectionHandler.connection)
           SeparateDbConnectionHandler.connection.close
         else
