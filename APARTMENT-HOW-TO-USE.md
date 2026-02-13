@@ -75,15 +75,40 @@ rake apartment:seed
 
 ---
 
-## 5. Elevator (HTTP Request)
+## 5. Elevator (HTTP Request) — `Apartment::Elevators::Subdomain`
 
-Com subdomínio `agros-api.seudominio.com`, o Elevator Subdomain detecta o tenant automaticamente:
+### O que é
+
+O **Subdomain** é um middleware Rack que determina o tenant a partir do **primeiro subdomínio** do host da requisição HTTP. Exemplos:
+
+| Host da requisição        | Tenant detectado |
+|--------------------------|------------------|
+| `agros-api.seudominio.com` | `agros-api`      |
+| `foo.example.com`        | `foo`            |
+| `acme.bar.co.uk`         | `acme`           |
+| `example.com`            | — (nenhum)       |
+| `localhost` ou `127.0.0.1` | — (nenhum)     |
+
+### Como funciona
+
+1. Usa a gem `public_suffix` para parse correto de domínios (TLDs como `.com.br`, `.co.uk`, etc.).
+2. Extrai o **TRD** (third-level domain) e pega o primeiro segmento antes do domínio principal.
+3. Se o subdomínio estiver em `excluded_subdomains` (ex.: `www`), retorna `nil` e a requisição roda no schema padrão.
+
+### Configuração
 
 ```ruby
 # config/initializers/apartment.rb
 require 'apartment/elevators/subdomain'
 Rails.application.config.middleware.use Apartment::Elevators::Subdomain
+
+# Opcional: excluir subdomínios que não devem acionar tenant switch
+Apartment::Elevators::Subdomain.excluded_subdomains = %w[www admin]
 ```
+
+### Uso com agros-api
+
+Com subdomínio `agros-api.seudominio.com`, o Elevator Subdomain detecta o tenant `agros-api` automaticamente e executa a requisição dentro do bloco `Apartment::Tenant.switch('agros-api') { ... }`.
 
 ---
 
